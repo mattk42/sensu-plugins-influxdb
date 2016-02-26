@@ -45,10 +45,11 @@ class SensuToInfluxDB < Sensu::Handler
     influxdb_data = InfluxDB::Client.new database, opts
 
     client_name = @event['client']['name']
+    cleint_tags = @event['client']['tags']
     metric_name = @event['check']['name']
 
     metric_raw = @event['check']['output']
-    tags = @event['check']['tags']
+    check_tags = @event['check']['tags']
 
     data = []
     metric_raw.split("\n").each do |metric|
@@ -58,20 +59,21 @@ class SensuToInfluxDB < Sensu::Handler
       key.tr!('.', '_')
       value = m[1].to_f
       time = m[2]
-      custom_tags = {}
-      custom_tags_raw = m[3..-1]
-      custom_tags_raw.each do |custom_tag|
-        t = custom_tag.split('=')
+      result_tags= {}
+      result_tags_raw = m[3..-1]
+      result_tags_raw.each do |result_tag|
+        t = result_tag.split('=')
         next unless t.count == 2
-        custom_tags[t[0]] = t[1]
+        result_tags[t[0]] = t[1]
       end
       point = { series: key,
                 tags: { host: client_name, metric: metric_name },
                 values: { value: value },
                 timestamp: time
               }
-      point[:tags].merge!(tags) unless tags.nil?
-      point[:tags].merge!(custom_tags) unless custom_tags.nil?
+      point[:tags].merge!(check_tags) unless check_tags.nil?
+      point[:tags].merge!(client_tags) unless client_tags.nil?
+      point[:tags].merge!(result_tags) unless result_tags.nil?
       data.push(point)
     end
     influxdb_data.write_points(data)
