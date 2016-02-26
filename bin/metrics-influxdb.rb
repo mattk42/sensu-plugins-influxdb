@@ -45,7 +45,7 @@ class SensuToInfluxDB < Sensu::Handler
     influxdb_data = InfluxDB::Client.new database, opts
 
     client_name = @event['client']['name']
-    cleint_tags = @event['client']['tags']
+    client_tags = @event['client']['tags']
     metric_name = @event['check']['name']
 
     metric_raw = @event['check']['output']
