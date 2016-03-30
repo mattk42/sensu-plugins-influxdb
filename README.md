@@ -41,7 +41,7 @@
     }
 }
 ```
-To ship additional tags to your metrics via metrics-influxdb.rb (only available in influxdb >= 0.9), just add a tags block inside your check.
+To ship additional tags to your metrics via metrics-influxdb.rb (only available in influxdb >= 0.9), you can either add a tags block inside your check or add the tags to the output of your check. If adding tags to the end of your check output, the format should in the format ```<metric key> <metric value> <metric timestamp> <key_1>=<value_1> <key_2>=<value_2> ... <key_N>=<value_N>```
 
 ## Installation
 
