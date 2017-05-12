@@ -76,6 +76,11 @@ class SensuToInfluxDB < Sensu::Handler
       point[:tags].merge!(result_tags) unless result_tags.nil?
       data.push(point)
     end
-    influxdb_data.write_points(data)
+    resp = influxdb_data.write_points(data)
+    if resp.code != "204"
+      p "Failed with response: #{resp} and data: #{data}"
+    else
+      p "Success"
+    end
   end
 end
